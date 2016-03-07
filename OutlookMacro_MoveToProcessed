@@ -1,0 +1,35 @@
+'Outlook VB Macro to move selected mail item(s) to a target folder
+Sub MoveToProcessed()
+On Error Resume Next
+
+Dim ns As Outlook.NameSpace
+Dim MoveToFolder As Outlook.MAPIFolder
+Dim objItem As Outlook.MailItem
+
+Set ns = Application.GetNamespace("MAPI")
+
+'Define path to the target folder
+Set MoveToFolder = ns.Folders("christopher.fogelberg@cgi.com").Folders("Processed")
+
+If Application.ActiveExplorer.Selection.Count = 0 Then
+  MsgBox ("No item selected")
+  Exit Sub
+End If
+
+If MoveToFolder Is Nothing Then
+  MsgBox "Target folder not found!", vbOKOnly + vbExclamation, "Move Macro Error"
+End If
+
+For Each objItem In Application.ActiveExplorer.Selection
+  If MoveToFolder.DefaultItemType = olMailItem Then
+    If objItem.Class = olMail Then
+      objItem.Move MoveToFolder
+    End If
+  End If
+Next
+
+Set objItem = Nothing
+Set MoveToFolder = Nothing
+Set ns = Nothing
+
+End Sub
