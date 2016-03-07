@@ -23,6 +23,7 @@ End If
 For Each objItem In Application.ActiveExplorer.Selection
   If MoveToFolder.DefaultItemType = olMailItem Then
     If objItem.Class = olMail Then
+      objItem.UnRead = False
       objItem.Move MoveToFolder
     End If
   End If
