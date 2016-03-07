@@ -12,20 +12,22 @@ Set ns = Application.GetNamespace("MAPI")
 Set MoveToFolder = ns.Folders("christopher.fogelberg@cgi.com").Folders("Processed")
 
 If Application.ActiveExplorer.Selection.Count = 0 Then
-  MsgBox ("No item selected")
-  Exit Sub
+   MsgBox ("No item selected")
+   Exit Sub
 End If
 
 If MoveToFolder Is Nothing Then
-  MsgBox "Target folder not found!", vbOKOnly + vbExclamation, "Move Macro Error"
+   MsgBox "Target folder not found!", vbOKOnly + vbExclamation, "Move Macro Error"
 End If
 
-For Each objItem In Application.ActiveExplorer.Selection
-  If MoveToFolder.DefaultItemType = olMailItem Then
-    If objItem.Class = olMail Then
-      objItem.UnRead = False
-      objItem.Move MoveToFolder
-    End If
+For Each objItem In Application.ActiveExplorer.Selection '
+   If MoveToFolder.DefaultItemType = olMailItem Then
+      If IsProcessable(objItem) Then
+        objItem.UnRead = False
+        objItem.Move MoveToFolder
+      Else
+        Call MsgBox("'" & objItem & "' is not of right type - not moving", vbExclamation, "Warning")
+      End If
   End If
 Next
 
@@ -34,3 +36,13 @@ Set MoveToFolder = Nothing
 Set ns = Nothing
 
 End Sub
+
+Function IsProcessable(obj As Object) As Boolean
+    Select Case obj.Class
+    Case olMail, olMeetingResponseNegative, olMeetingResponsePositive, olMeetingResponseTentative
+        IsProcessable = True
+    Case Else
+        IsProcessable = False
+    End Select
+End Function
+
